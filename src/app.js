@@ -9,9 +9,9 @@ const publicDirectory = path.join(__dirname, '../public')
 const viewsPath = path.join(__dirname, '../templates/views')
 const partialPath = path.join(__dirname, '../templates/partials')
 
-// Setup Handlebars engine and views location D:\NodeJS\web-server\templates\partials web-server\templates\partials\header.hbs
-app.set('views', viewsPath)
+// Setup Handlebars engine and views location 
 app.set('view engine', 'hbs')
+app.set('views', viewsPath)
 hbs.registerPartials(partialPath)
 
 // Setup static directory to serve
@@ -31,21 +31,30 @@ app.get('/about', (req, res) => {
     })
 })
 
-app.get('/weather', (req, res) => {
-    res.send({
-        forecast: 'forecast',
-        location: 'locationStirng'
-    })
-})
 
 app.get('/help', (req, res)=>{
     res.render('help', {
-        msg: 'If you need some help please call me ;)'
+        msg: 'If you need some help please call me ;)',
+        title: "Help",
+        name: 'Yorguin'
     })
 })
-// app.com
-// app.com/help
-// app.com/about
+
+app.get('/help/*', (req, res) =>{
+    res.render("404", {
+        title: '404',
+        name: 'Yorguin Muyrillo',
+        errorMessage: 'Page article not found'
+    })
+})
+
+app.get('*', (req, res) =>{
+    res.render("404", {
+        title: '404',
+        name: 'Yorguin Muyrillo',
+        errorMessage: 'Page not found'
+    })
+})
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000')
