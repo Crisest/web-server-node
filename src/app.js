@@ -1,6 +1,8 @@
 const path = require('path')
 const express = require('express')
 const hbs = require('hbs')
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
 
 const app = express()
 
@@ -17,6 +19,44 @@ hbs.registerPartials(partialPath)
 // Setup static directory to serve
 app.use(express.static(publicDirectory))
 
+app.get('/weather', (req, res) =>{
+
+    if(!req.query.address){
+        return res.send('Error, You must provide a search criteria')
+    }
+    else{
+
+        const input = req.query.address
+        geocode(input, (error, {latitude, longitude, location} = {}) => {
+            if(error){
+            return res.send({ error })
+            }
+            forecast(latitude, longitude, (error, forecastData) => {
+            if(error){
+                return res.send({ error })
+            }
+            res.send({
+                forecast: forecastData.message,
+                location: location,
+                address: req.query.address
+            })        
+            })  
+        })
+    }
+})
+
+app.get('/products', (req, res) =>{
+    if(!req.query.search){
+        return res.send({
+            error: 'You must provide a search criteria'
+        })
+    }
+    console.log(req.query)
+    res.send({
+        products: []
+    })
+})
+
 app.get('', (req,res)=>{
     res.render('index', {
         title: 'Weather app',
@@ -30,8 +70,7 @@ app.get('/about', (req, res) => {
         name: 'Yorguin'
     })
 })
-
-
+ 
 app.get('/help', (req, res)=>{
     res.render('help', {
         msg: 'If you need some help please call me ;)',
@@ -41,15 +80,15 @@ app.get('/help', (req, res)=>{
 })
 
 app.get('/help/*', (req, res) =>{
-    res.render("404", {
+    res.render('404', {
         title: '404',
         name: 'Yorguin Muyrillo',
         errorMessage: 'Page article not found'
     })
 })
 
-app.get('*', (req, res) =>{
-    res.render("404", {
+app.get('/*', (req, res) =>{
+    res.render('404', {
         title: '404',
         name: 'Yorguin Muyrillo',
         errorMessage: 'Page not found'
