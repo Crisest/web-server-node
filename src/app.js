@@ -84,7 +84,7 @@ app.get('/help', (req, res)=>{
 app.get('/help/*', (req, res) =>{
     res.render('404', {
         title: '404',
-        name: 'Yorguin Muyrillo',
+        name: 'Yorguin Murillo',
         errorMessage: 'Page article not found'
     })
 })
